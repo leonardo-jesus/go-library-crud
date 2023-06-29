@@ -1,0 +1,44 @@
+version: '3.9'
+services:
+  api:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: dev
+    volumes:
+      - ./:/api
+    env_file:
+      - .env
+    ports:
+      - 3333:3333
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: api
+      POSTGRES_USER : local-dev
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - 5432:5432
+
+  migration: &migration
+    profiles: ["tools"]
+    image: migrate/migrate
+    entrypoint: "migrate -database postgresql://local-dev@db/api?sslmode=disable -path /tmp/migrations"
+    command: up
+    depends_on:
+      - db
+    volumes:
+      - ./migrations:/tmp/migrations
+
+  create-migration:
+    <<: *migration
+    entrypoint: migrate create -dir /tmp/migrations -ext sql
+    command: ""
+
+volumes:
+  data:
