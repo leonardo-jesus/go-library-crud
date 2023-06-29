@@ -16,5 +16,6 @@ func NewAuthorRoutes(authorController controllers.AuthorControllerInterface) *au
 func (r *authorRoutes) RegisterRoutes(app *fiber.App) {
 	app.Get("/", r.authorController.Check)
 	app.Get("/author", r.authorController.FindAll)
+	app.Get("/author/filter", r.authorController.FindByName)
 	app.Post("/author", r.authorController.Create)
 }

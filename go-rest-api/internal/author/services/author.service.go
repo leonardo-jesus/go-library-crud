@@ -9,7 +9,8 @@ import (
 )
 
 type AuthorServiceInterface interface {
-	FindAll() (author []*models.Author, err error)
+	FindAll(page int) (author []*models.Author, err error)
+	FindByName(name string, page int) (author []*models.Author, err error)
 	Create() (err error)
 }
 
@@ -38,8 +39,12 @@ func ReadCsv(filename string) (records []string) {
 	return records
 }
 
-func (s *authorService) FindAll() (author []*models.Author, err error) {
-	return s.authorRepository.FindAll()
+func (s *authorService) FindAll(page int) (author []*models.Author, err error) {
+	return s.authorRepository.FindAll(page)
+}
+
+func (s *authorService) FindByName(name string, page int) (author []*models.Author, err error) {
+	return s.authorRepository.FindByName(name, page)
 }
 
 func (s *authorService) Create() (err error) {

@@ -14,12 +14,12 @@ import (
 )
 
 func main() {
-	conn := db.NewConnection()
-	defer conn.Close(context.Background())
+	db := db.NewConnection()
+	defer db.Close(context.Background())
 
 	app := fiber.New()
 
-	authorRepository := repository.NewAuthorRepository(conn)
+	authorRepository := repository.NewAuthorRepository(db)
 	authorService := services.NewAuthorService(authorRepository)
 	authorController := controllers.NewAuthorController(authorService)
 	authorRouter := routes.NewAuthorRoutes(authorController)
