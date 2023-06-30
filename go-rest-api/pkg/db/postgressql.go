@@ -9,7 +9,7 @@ import (
 )
 
 func NewConnection() *pgx.Conn {
-	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABSE_URL"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Panicln(err.Error())
 	}
