@@ -10,7 +10,7 @@ WORKDIR /api
 CMD ["air"]
 
 # Dockerfile.production
-FROM base as built
+FROM golang:1.19-alpine as built
 
 WORKDIR /api
 COPY . .
