@@ -170,5 +170,5 @@ func (c *bookController) Delete(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusInternalServerError).JSON(err)
 	}
 
-	return ctx.Status(http.StatusCreated).JSON(fiber.Map{"success": "true"})
+	return ctx.Status(http.StatusNoContent).JSON(fiber.Map{})
 }
