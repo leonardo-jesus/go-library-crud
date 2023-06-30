@@ -48,20 +48,6 @@ func (s *authorService) FindByName(name string, page int) (author []*models.Auth
 }
 
 func (s *authorService) Create() (err error) {
-	// records := ReadCsv("./internal/assets/authors.csv")
-
-	// var authorRecords []models.Author
-	// for _, record := range records {
-	// 	data := models.Author{
-	// 		Name: record,
-	// 	}
-
-	// 	// TODO: For each record, save in the DB (should make a chunk and save all together on DB)
-	// 	authorRecords = append(authorRecords, data)
-	// }
-
-	// fmt.Println(authorRecords)
-
 	s.authorRepository.Create()
 
 	return nil

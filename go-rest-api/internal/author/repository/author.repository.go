@@ -2,13 +2,21 @@ package repository
 
 import (
 	"context"
+	"encoding/csv"
+	"fmt"
+	"io"
 	"log"
+	"os"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/author/models"
 )
 
 const LIMIT = 10
+const ONE_MILLION = 1000000
+const CHUNK_SIZE = ONE_MILLION
+
+var END_OF_FILE_ERROR error = io.EOF
 
 type AuthorRepositoryInterface interface {
 	FindAll(page int) (author []*models.Author, err error)
@@ -73,10 +81,108 @@ func (r *authorRepository) FindByName(name string, page int) (authors []*models.
 }
 
 func (r *authorRepository) Create() (err error) {
-	_, err = r.db.Exec(context.Background(), "INSERT INTO authors(name) VALUES($1)", "TESTE")
+	csvFile, err := os.Open("./internal/author/assets/authors.csv")
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("os.Open %w", err)
+	}
+	defer csvFile.Close()
+
+	csvReader := csv.NewReader(csvFile)
+
+	tx, err := r.db.Begin(context.Background())
+	if err != nil {
+		log.Fatal("Unable to begin transaction:", err)
+	}
+	defer tx.Rollback(context.Background())
+
+	for {
+		chunk, isEndOfFile, err := readChunk(csvReader)
+		if err != nil {
+			log.Fatal("Error reading CSV chunk:", err)
+		}
+
+		err = bulkInsertOnDatabase(tx, chunk)
+		if err != nil {
+			log.Fatal("Error inserting CSV chunk:", err)
+		}
+
+		if isEndOfFile {
+			break
+		}
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		log.Fatal("Error committing transaction:", err)
 	}
 
 	return nil
+}
+
+func readChunk(reader *csv.Reader) ([][]string, bool, error) {
+	chunk := make([][]string, 0, CHUNK_SIZE)
+
+	for {
+		record, err := reader.Read()
+		if err != nil {
+			if err == END_OF_FILE_ERROR {
+				break
+			}
+
+			return nil, false, err
+		}
+
+		chunk = append(chunk, record)
+
+		if hasDataToProccess(chunk) {
+			return chunk, false, nil
+		}
+	}
+
+	return chunk, true, nil
+}
+
+func hasDataToProccess(chunk [][]string) bool {
+	return len(chunk) == CHUNK_SIZE
+}
+
+type CopyDataReader struct {
+	chunks [][]string
+	index  int
+}
+
+func (cdr *CopyDataReader) Next() bool {
+	return cdr.index < len(cdr.chunks)
+}
+
+func (cdr *CopyDataReader) Values() ([]interface{}, error) {
+	if cdr.index >= len(cdr.chunks) {
+		return nil, END_OF_FILE_ERROR
+	}
+
+	row := cdr.chunks[cdr.index]
+	cdr.index++
+	values := make([]interface{}, len(row))
+	for i, value := range row {
+		values[i] = interface{}(value)
+	}
+
+	return values, nil
+}
+
+func (cdr *CopyDataReader) Err() error {
+	return nil
+}
+
+func buildCopyData(chunks [][]string) pgx.CopyFromSource {
+	return &CopyDataReader{
+		chunks: chunks,
+		index:  0,
+	}
+}
+
+func bulkInsertOnDatabase(tx pgx.Tx, chunk [][]string) (err error) {
+	_, err = tx.CopyFrom(context.Background(), pgx.Identifier{"authors"}, []string{"name"}, buildCopyData(chunk))
+
+	return err
 }
