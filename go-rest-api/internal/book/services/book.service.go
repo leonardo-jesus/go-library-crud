@@ -1,14 +1,19 @@
 package services
 
 import (
+	"fmt"
+
+	"dario.cat/mergo"
 	"github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/book/models"
 	"github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/book/repository"
 )
 
 type BookServiceInterface interface {
-	FindAll(page int) (book []*models.BookDB, err error)
-	FindByName(name string, page int) (book []*models.BookDB, err error)
-	Create(book *models.BookAPI) (err error)
+	FindAll(page int) (book []*models.Book, err error)
+	FindByName(name string, page int) (book []*models.Book, err error)
+	FindById(id int) (book *models.UpdateBookSchema, err error)
+	Create(book *models.CreateBookSchema) (err error)
+	Update(book *models.UpdateBookSchema) (err error)
 }
 
 type bookService struct {
@@ -19,16 +24,36 @@ func NewBookService(bookRepository repository.BookRepositoryInterface) BookServi
 	return &bookService{bookRepository}
 }
 
-func (s *bookService) FindAll(page int) (book []*models.BookDB, err error) {
+func (s *bookService) FindAll(page int) (book []*models.Book, err error) {
 	return s.bookRepository.FindAll(page)
 }
 
-func (s *bookService) FindByName(name string, page int) (book []*models.BookDB, err error) {
+func (s *bookService) FindByName(name string, page int) (book []*models.Book, err error) {
 	return s.bookRepository.FindByName(name, page)
 }
 
-func (s *bookService) Create(book *models.BookAPI) (err error) {
-	s.bookRepository.Create(book)
+func (s *bookService) FindById(id int) (book *models.UpdateBookSchema, err error) {
+	return s.bookRepository.FindById(id)
+}
+
+func (s *bookService) Create(book *models.CreateBookSchema) (err error) {
+	return s.bookRepository.Create(book)
+}
+
+func (s *bookService) Update(book *models.UpdateBookSchema) (err error) {
+	fmt.Println(book)
+	bookFromDb, err := s.FindById(book.Id)
+	if err != nil {
+		return err
+	}
+
+	err = mergo.Merge(bookFromDb, book, mergo.WithOverride)
+
+	if err != nil {
+		return err
+	}
+
+	s.bookRepository.Update(bookFromDb)
 
 	return nil
 }

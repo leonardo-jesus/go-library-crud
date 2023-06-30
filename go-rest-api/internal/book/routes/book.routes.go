@@ -5,6 +5,10 @@ import (
 	"github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/book/controllers"
 )
 
+type BookRoutesInterface interface {
+	RegisterRoutes(app *fiber.App)
+}
+
 type bookRoutes struct {
 	bookController controllers.BookControllerInterface
 }
@@ -17,4 +21,5 @@ func (r *bookRoutes) RegisterRoutes(app *fiber.App) {
 	app.Get("/book", r.bookController.FindAll)
 	app.Get("/book/filter", r.bookController.FindByName)
 	app.Post("/book", r.bookController.Create)
+	app.Patch("/book", r.bookController.Update)
 }

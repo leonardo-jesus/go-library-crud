@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/jackc/pgx/v5"
@@ -11,9 +12,11 @@ import (
 const LIMIT = 10
 
 type BookRepositoryInterface interface {
-	FindAll(page int) (book []*models.BookDB, err error)
-	FindByName(name string, page int) (book []*models.BookDB, err error)
-	Create(book *models.BookAPI) (err error)
+	FindAll(page int) (book []*models.Book, err error)
+	FindByName(name string, page int) (book []*models.Book, err error)
+	FindById(id int) (book *models.UpdateBookSchema, err error)
+	Create(book *models.CreateBookSchema) (err error)
+	Update(book *models.UpdateBookSchema) (err error)
 }
 
 type bookRepository struct {
@@ -24,7 +27,7 @@ func NewBookRepository(db *pgx.Conn) BookRepositoryInterface {
 	return &bookRepository{db}
 }
 
-func (r *bookRepository) FindAll(page int) (books []*models.BookDB, err error) {
+func (r *bookRepository) FindAll(page int) (books []*models.Book, err error) {
 	query := `SELECT b.id, b.name, b.edition, b.publication_year, array_agg(a.name) AS authors
 		FROM books b
 		JOIN book_authors ba ON ba.book_id = b.id
@@ -39,10 +42,10 @@ func (r *bookRepository) FindAll(page int) (books []*models.BookDB, err error) {
 	}
 	defer rows.Close()
 
-	var foundBooks []*models.BookDB
+	var foundBooks []*models.Book
 
 	for rows.Next() {
-		var book models.BookDB
+		var book models.Book
 		var authors []string
 
 		err := rows.Scan(&book.Id, &book.Name, &book.Edition, &book.PublicationYear, &authors)
@@ -57,7 +60,7 @@ func (r *bookRepository) FindAll(page int) (books []*models.BookDB, err error) {
 	return foundBooks, nil
 }
 
-func (r *bookRepository) FindByName(name string, page int) (books []*models.BookDB, err error) {
+func (r *bookRepository) FindByName(name string, page int) (books []*models.Book, err error) {
 	query := "SELECT * FROM books WHERE name = $1 ORDER BY id OFFSET (($2 - 1) * $3) ROWS FETCH NEXT $3 ROWS ONLY"
 	rows, err := r.db.Query(context.Background(), query, name, page, LIMIT)
 	if err != nil {
@@ -65,10 +68,10 @@ func (r *bookRepository) FindByName(name string, page int) (books []*models.Book
 	}
 	defer rows.Close()
 
-	var foundBooks []*models.BookDB
+	var foundBooks []*models.Book
 
 	for rows.Next() {
-		var row models.BookDB
+		var row models.Book
 
 		err := rows.Scan(&row.Id, &row.Name)
 		if err != nil {
@@ -81,7 +84,43 @@ func (r *bookRepository) FindByName(name string, page int) (books []*models.Book
 	return foundBooks, nil
 }
 
-func (r *bookRepository) Create(book *models.BookAPI) (err error) {
+func (r *bookRepository) FindById(id int) (books *models.UpdateBookSchema, err error) {
+	query := `
+		SELECT b.id, b.name, b.edition, b.publication_year, array_agg(a.id) AS authors
+		FROM books b
+		JOIN book_authors ba ON ba.book_id = b.id
+		JOIN authors a ON a.id = ba.author_id
+		WHERE b.id = $1
+		GROUP BY b.id
+		ORDER BY b.id
+		LIMIT 1
+	`
+
+	rows, err := r.db.Query(context.Background(), query, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var foundBook *models.UpdateBookSchema
+
+	for rows.Next() {
+		var book models.UpdateBookSchema
+		var authors []int
+
+		err := rows.Scan(&book.Id, &book.Name, &book.Edition, &book.PublicationYear, &authors)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		book.Authors = &authors
+		foundBook = &book
+	}
+
+	return foundBook, nil
+}
+
+func (r *bookRepository) Create(book *models.CreateBookSchema) (err error) {
 	sql := `
 		WITH inserted_book AS (
 			INSERT INTO books (name, edition, publication_year)
@@ -94,9 +133,59 @@ func (r *bookRepository) Create(book *models.BookAPI) (err error) {
 		WHERE authors.id = ANY($4::int[]);
 	`
 
+	fmt.Println(book.Authors)
 	_, err = r.db.Exec(context.Background(), sql, book.Name, book.Edition, book.PublicationYear, book.Authors)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (r *bookRepository) Update(book *models.UpdateBookSchema) (err error) {
+	updateSQL := `
+		UPDATE books
+		SET name = $1,
+			edition = $2,
+			publication_year = $3
+		WHERE id = $4
+	`
+
+	_, err = r.db.Exec(context.Background(), updateSQL, *book.Name, *book.Edition, *book.PublicationYear, book.Id)
+	if err != nil {
+		panic(err)
+	}
+
+	r.DeleteBookFromBookAuthors(book.Id)
+	r.InsertBookInBookAuthors(book.Id, book.Authors)
+
+	return nil
+}
+
+func (r *bookRepository) DeleteBookFromBookAuthors(id int) (err error) {
+	deleteSQL := `
+		DELETE FROM book_authors WHERE book_id = $1
+	`
+
+	_, err = r.db.Exec(context.Background(), deleteSQL, id)
+	if err != nil {
+		panic(err)
+	}
+
+	return nil
+}
+
+func (r *bookRepository) InsertBookInBookAuthors(bookId int, authorsId *[]int) (err error) {
+	insertSQL := `
+		INSERT INTO book_authors (book_id, author_id)
+		SELECT $1, authors.id
+		FROM authors
+		WHERE authors.id = ANY($2::int[])
+	`
+
+	_, err = r.db.Exec(context.Background(), insertSQL, bookId, *authorsId)
+	if err != nil {
+		panic(err)
 	}
 
 	return nil
