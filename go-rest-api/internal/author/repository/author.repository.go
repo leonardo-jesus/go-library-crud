@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"os"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/author/models"
@@ -21,7 +20,7 @@ var END_OF_FILE_ERROR error = io.EOF
 type AuthorRepositoryInterface interface {
 	FindAll(page int) (author []*models.Author, err error)
 	FindByName(name string, page int) (author []*models.Author, err error)
-	Create() (err error)
+	Create(csvReader *csv.Reader) (err error)
 }
 
 type authorRepository struct {
@@ -80,30 +79,22 @@ func (r *authorRepository) FindByName(name string, page int) (authors []*models.
 	return foundAuthors, nil
 }
 
-func (r *authorRepository) Create() (err error) {
-	csvFile, err := os.Open("./internal/author/assets/authors.csv")
-	if err != nil {
-		return fmt.Errorf("os.Open %w", err)
-	}
-	defer csvFile.Close()
-
-	csvReader := csv.NewReader(csvFile)
-
+func (r *authorRepository) Create(csvReader *csv.Reader) (err error) {
 	tx, err := r.db.Begin(context.Background())
 	if err != nil {
-		log.Fatal("Unable to begin transaction:", err)
+		return fmt.Errorf("unable to begin transaction: %w", err)
 	}
 	defer tx.Rollback(context.Background())
 
 	for {
 		chunk, isEndOfFile, err := readChunk(csvReader)
 		if err != nil {
-			log.Fatal("Error reading CSV chunk:", err)
+			return fmt.Errorf("error reading CSV chunk: %w", err)
 		}
 
 		err = bulkInsertOnDatabase(tx, chunk)
 		if err != nil {
-			log.Fatal("Error inserting CSV chunk:", err)
+			return fmt.Errorf("error inserting CSV chunk: %w", err)
 		}
 
 		if isEndOfFile {
@@ -113,7 +104,7 @@ func (r *authorRepository) Create() (err error) {
 
 	err = tx.Commit(context.Background())
 	if err != nil {
-		log.Fatal("Error committing transaction:", err)
+		return fmt.Errorf("error committing transaction: %w", err)
 	}
 
 	return nil

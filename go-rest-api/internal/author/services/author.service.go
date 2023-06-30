@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/csv"
 	"errors"
+	"fmt"
 	"os"
 
 	"github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/author/models"
@@ -25,21 +26,14 @@ func NewAuthorService(authorRepository repository.AuthorRepositoryInterface) Aut
 	return &authorService{authorRepository}
 }
 
-func ReadCsv(filename string) (records []string) {
-	file, err := os.Open(filename)
+func GetCsvReader() (csvReader *csv.Reader, err error) {
+	csvFile, err := os.Open("./internal/author/assets/authors.csv")
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("os.Open %w", err)
 	}
+	defer csvFile.Close()
 
-	csvReader := csv.NewReader(file)
-	csvReader.Comma = ';'
-	records, err = csvReader.Read()
-	if err != nil {
-		panic(err)
-	}
-
-	defer file.Close()
-	return records
+	return csv.NewReader(csvFile), nil
 }
 
 func (s *authorService) FindAll(page int) (author []*models.Author, err error) {
@@ -59,7 +53,8 @@ func (s *authorService) FindByName(name string, page int) (author []*models.Auth
 }
 
 func (s *authorService) Create() (err error) {
-	s.authorRepository.Create()
+	csvReader, _ := GetCsvReader()
+	s.authorRepository.Create(csvReader)
 
 	return nil
 }
