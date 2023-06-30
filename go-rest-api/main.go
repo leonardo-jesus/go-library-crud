@@ -26,16 +26,17 @@ func main() {
 	app := fiber.New()
 
 	validatorUtil := utils.NewValidatorUtil(validator.New())
+	querystringUtil := utils.NewQuerystringUtil()
 
 	authorRepository := authorRepository.NewAuthorRepository(db)
 	authorService := authorServices.NewAuthorService(authorRepository)
-	authorController := authorControllers.NewAuthorController(authorService)
+	authorController := authorControllers.NewAuthorController(authorService, querystringUtil)
 	authorRouter := authorRoutes.NewAuthorRoutes(authorController)
 	authorRouter.RegisterRoutes(app)
 
 	bookRepository := bookRepository.NewBookRepository(db)
 	bookService := bookServices.NewBookService(bookRepository)
-	bookController := bookControllers.NewBookController(bookService, validatorUtil)
+	bookController := bookControllers.NewBookController(bookService, validatorUtil, querystringUtil)
 	bookRouter := bookRoutes.NewBookRoutes(bookController)
 	bookRouter.RegisterRoutes(app)
 

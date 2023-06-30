@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/book/models"
@@ -18,16 +17,17 @@ type BookControllerInterface interface {
 }
 
 type bookController struct {
-	bookService   services.BookServiceInterface
-	validatorUtil utils.ValidatorUtilInterface
+	bookService     services.BookServiceInterface
+	validatorUtil   utils.ValidatorUtilInterface
+	querystringUtil utils.QuerystringUtilInterface
 }
 
-func NewBookController(bookService services.BookServiceInterface, validatorUtil utils.ValidatorUtilInterface) BookControllerInterface {
-	return &bookController{bookService, validatorUtil}
+func NewBookController(bookService services.BookServiceInterface, validatorUtil utils.ValidatorUtilInterface, querystringUtil utils.QuerystringUtilInterface) BookControllerInterface {
+	return &bookController{bookService, validatorUtil, querystringUtil}
 }
 
 func (c *bookController) FindAll(ctx *fiber.Ctx) error {
-	page := c.GetPageFromQuerystring(ctx)
+	page := c.querystringUtil.GetPageFromQuerystring(ctx)
 
 	books, err := c.bookService.FindAll(page)
 	if err != nil {
@@ -38,7 +38,7 @@ func (c *bookController) FindAll(ctx *fiber.Ctx) error {
 }
 
 func (c *bookController) FindByName(ctx *fiber.Ctx) error {
-	page := c.GetPageFromQuerystring(ctx)
+	page := c.querystringUtil.GetPageFromQuerystring(ctx)
 
 	books, err := c.bookService.FindByName(ctx.Query("name"), page)
 	if err != nil {
@@ -88,17 +88,4 @@ func (c *bookController) Update(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(http.StatusCreated).JSON(fiber.Map{"success": "true"})
-}
-
-func (c *bookController) GetPageFromQuerystring(ctx *fiber.Ctx) int {
-	result, err := strconv.Atoi(ctx.Query("page"))
-	if err != nil {
-		return 1
-	}
-
-	if result < 1 {
-		result = 1
-	}
-
-	return result
 }

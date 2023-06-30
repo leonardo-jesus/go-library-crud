@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/author/services"
+	"github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/utils"
 )
 
 type AuthorControllerInterface interface {
@@ -15,15 +15,16 @@ type AuthorControllerInterface interface {
 }
 
 type authorController struct {
-	authorService services.AuthorServiceInterface
+	authorService   services.AuthorServiceInterface
+	querystringUtil utils.QuerystringUtilInterface
 }
 
-func NewAuthorController(authorService services.AuthorServiceInterface) AuthorControllerInterface {
-	return &authorController{authorService}
+func NewAuthorController(authorService services.AuthorServiceInterface, querystringUtil utils.QuerystringUtilInterface) AuthorControllerInterface {
+	return &authorController{authorService, querystringUtil}
 }
 
 func (c *authorController) FindAll(ctx *fiber.Ctx) error {
-	page := c.GetPageFromQuerystring(ctx)
+	page := c.querystringUtil.GetPageFromQuerystring(ctx)
 
 	authors, err := c.authorService.FindAll(page)
 	if err != nil {
@@ -34,7 +35,7 @@ func (c *authorController) FindAll(ctx *fiber.Ctx) error {
 }
 
 func (c *authorController) FindByName(ctx *fiber.Ctx) error {
-	page := c.GetPageFromQuerystring(ctx)
+	page := c.querystringUtil.GetPageFromQuerystring(ctx)
 
 	authors, err := c.authorService.FindByName(ctx.Query("name"), page)
 	if err != nil {
@@ -51,17 +52,4 @@ func (c *authorController) Create(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(http.StatusCreated).JSON(fiber.Map{"success": "true"})
-}
-
-func (c *authorController) GetPageFromQuerystring(ctx *fiber.Ctx) int {
-	result, err := strconv.Atoi(ctx.Query("page"))
-	if err != nil {
-		return 1
-	}
-
-	if result < 1 {
-		result = 1
-	}
-
-	return result
 }
