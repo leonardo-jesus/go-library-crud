@@ -11,7 +11,6 @@ import (
 type AuthorControllerInterface interface {
 	FindAll(c *fiber.Ctx) error
 	FindByName(c *fiber.Ctx) error
-	Check(c *fiber.Ctx) error
 	Create(c *fiber.Ctx) error
 }
 
@@ -43,10 +42,6 @@ func (c *authorController) FindByName(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(http.StatusOK).JSON(authors)
-}
-
-func (c *authorController) Check(ctx *fiber.Ctx) error {
-	return ctx.Status(http.StatusOK).JSON(fiber.Map{"success": "true"})
 }
 
 func (c *authorController) Create(ctx *fiber.Ctx) error {
