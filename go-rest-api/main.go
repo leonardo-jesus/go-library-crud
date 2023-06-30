@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	authorControllers "github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/author/controllers"
 	authorRepository "github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/author/repository"
@@ -14,6 +15,7 @@ import (
 	bookRepository "github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/book/repository"
 	bookRoutes "github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/book/routes"
 	bookServices "github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/book/services"
+	"github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/utils"
 	"github.com/leonardo-jesus/go-library-crud/go-rest-api/pkg/db"
 )
 
@@ -23,6 +25,8 @@ func main() {
 
 	app := fiber.New()
 
+	validatorUtil := utils.NewValidatorUtil(validator.New())
+
 	authorRepository := authorRepository.NewAuthorRepository(db)
 	authorService := authorServices.NewAuthorService(authorRepository)
 	authorController := authorControllers.NewAuthorController(authorService)
@@ -31,7 +35,7 @@ func main() {
 
 	bookRepository := bookRepository.NewBookRepository(db)
 	bookService := bookServices.NewBookService(bookRepository)
-	bookController := bookControllers.NewBookController(bookService)
+	bookController := bookControllers.NewBookController(bookService, validatorUtil)
 	bookRouter := bookRoutes.NewBookRoutes(bookController)
 	bookRouter.RegisterRoutes(app)
 
