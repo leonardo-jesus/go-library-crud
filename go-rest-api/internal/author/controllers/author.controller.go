@@ -31,7 +31,7 @@ func (c *authorController) FindAll(ctx *fiber.Ctx) error {
 	authors, err := c.authorService.FindAll(page)
 	if err != nil {
 		if err.Error() == NO_AUTHORS_FOUND_ERROR_MESSAGE {
-			return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
+			return ctx.Status(http.StatusNotFound).JSON(fiber.Map{"message": err.Error()})
 		}
 
 		return ctx.Status(http.StatusInternalServerError).JSON(err)
@@ -46,7 +46,7 @@ func (c *authorController) FindByName(ctx *fiber.Ctx) error {
 	authors, err := c.authorService.FindByName(ctx.Query("name"), page)
 	if err != nil {
 		if err.Error() == NO_AUTHORS_FOUND_ERROR_MESSAGE {
-			return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
+			return ctx.Status(http.StatusNotFound).JSON(fiber.Map{"message": err.Error()})
 		}
 
 		return ctx.Status(http.StatusInternalServerError).JSON(err)

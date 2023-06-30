@@ -37,7 +37,7 @@ func (c *bookController) FindAll(ctx *fiber.Ctx) error {
 	books, err := c.bookService.FindAll(page)
 	if err != nil {
 		if err.Error() == NO_BOOKS_FOUND_ERROR_MESSAGE {
-			return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
+			return ctx.Status(http.StatusNotFound).JSON(fiber.Map{"message": err.Error()})
 		}
 
 		return ctx.Status(http.StatusInternalServerError).JSON(err)
@@ -64,7 +64,7 @@ func (c *bookController) FindByFilteredBooks(ctx *fiber.Ctx) error {
 		for _, idString := range authorIds {
 			id, err := strconv.Atoi(idString)
 			if err != nil {
-				ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
+				ctx.Status(http.StatusNotFound).JSON(fiber.Map{"message": err.Error()})
 			}
 			*authorSlice = append(*authorSlice, id)
 		}
@@ -98,7 +98,7 @@ func (c *bookController) FindByFilteredBooks(ctx *fiber.Ctx) error {
 	books, err := c.bookService.FindByFilteredBooks(queryStringFilters, page)
 	if err != nil {
 		if err.Error() == NO_BOOKS_FOUND_ERROR_MESSAGE {
-			return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
+			return ctx.Status(http.StatusNotFound).JSON(fiber.Map{"message": err.Error()})
 		}
 
 		return ctx.Status(http.StatusInternalServerError).JSON(err)
@@ -150,7 +150,7 @@ func (c *bookController) Update(ctx *fiber.Ctx) error {
 	err = c.bookService.Update(bookFields)
 	if err != nil {
 		if err.Error() == NO_BOOKS_FOUND_ERROR_MESSAGE {
-			return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
+			return ctx.Status(http.StatusNotFound).JSON(fiber.Map{"message": err.Error()})
 		}
 
 		return ctx.Status(http.StatusInternalServerError).JSON(err)
