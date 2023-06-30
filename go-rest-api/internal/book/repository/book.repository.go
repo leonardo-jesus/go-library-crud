@@ -75,8 +75,6 @@ func (r *bookRepository) FindByFilteredBooks(filters models.FilteredBookSchema, 
 		OFFSET (($5 - 1) * $6) LIMIT $6;
 	`
 
-	// ANY($2::int[])
-
 	rows, err := r.db.Query(context.Background(), query, filters.Name, filters.Edition, filters.PublicationYear, filters.Authors, page, LIMIT)
 	if err != nil {
 		return nil, err
