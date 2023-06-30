@@ -12,7 +12,7 @@ const LIMIT = 10
 
 type BookRepositoryInterface interface {
 	FindAll(page int) (book []*models.Book, err error)
-	FindByName(name string, page int) (book []*models.Book, err error)
+	FindByFilteredBooks(filters models.FilteredBookSchema, page int) (book []*models.Book, err error)
 	FindById(id int) (book *models.UpdateBookSchema, err error)
 	Create(book *models.CreateBookSchema) (err error)
 	Update(book *models.UpdateBookSchema) (err error)
@@ -60,9 +60,24 @@ func (r *bookRepository) FindAll(page int) (books []*models.Book, err error) {
 	return foundBooks, nil
 }
 
-func (r *bookRepository) FindByName(name string, page int) (books []*models.Book, err error) {
-	query := "SELECT * FROM books WHERE name = $1 ORDER BY id OFFSET (($2 - 1) * $3) ROWS FETCH NEXT $3 ROWS ONLY"
-	rows, err := r.db.Query(context.Background(), query, name, page, LIMIT)
+func (r *bookRepository) FindByFilteredBooks(filters models.FilteredBookSchema, page int) (books []*models.Book, err error) {
+	query := `
+		SELECT b.id, b.name, b.edition, b.publication_year, array_agg(a.name) AS authors
+		FROM books b
+		JOIN book_authors ba ON ba.book_id = b.id
+		JOIN authors a ON a.id = ba.author_id
+		WHERE ($1::text IS NULL OR b.name = $1::text)
+			AND ($2::int IS NULL OR b.edition = $2::int)
+			AND ($3::int IS NULL OR b.publication_year = $3::int)
+			AND (COALESCE($4::int[], array(SELECT id FROM authors)) && ARRAY(SELECT author_id FROM book_authors WHERE book_id = b.id))
+		GROUP BY b.id
+		ORDER BY b.id
+		OFFSET (($5 - 1) * $6) LIMIT $6;
+	`
+
+	// ANY($2::int[])
+
+	rows, err := r.db.Query(context.Background(), query, filters.Name, filters.Edition, filters.PublicationYear, filters.Authors, page, LIMIT)
 	if err != nil {
 		return nil, err
 	}
@@ -71,14 +86,16 @@ func (r *bookRepository) FindByName(name string, page int) (books []*models.Book
 	var foundBooks []*models.Book
 
 	for rows.Next() {
-		var row models.Book
+		var book models.Book
+		var authorNames []string
 
-		err := rows.Scan(&row.Id, &row.Name)
+		err := rows.Scan(&book.Id, &book.Name, &book.Edition, &book.PublicationYear, &authorNames)
 		if err != nil {
 			return nil, err
 		}
 
-		foundBooks = append(foundBooks, &row)
+		book.Authors = authorNames
+		foundBooks = append(foundBooks, &book)
 	}
 
 	return foundBooks, nil

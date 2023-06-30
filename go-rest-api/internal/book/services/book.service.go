@@ -1,14 +1,18 @@
 package services
 
 import (
+	"errors"
+
 	"dario.cat/mergo"
 	"github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/book/models"
 	"github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/book/repository"
 )
 
+const NO_BOOKS_FOUND_ERROR_MESSAGE = "no books found"
+
 type BookServiceInterface interface {
 	FindAll(page int) (book []*models.Book, err error)
-	FindByName(name string, page int) (book []*models.Book, err error)
+	FindByFilteredBooks(filters models.FilteredBookSchema, page int) (book []*models.Book, err error)
 	FindById(id int) (book *models.UpdateBookSchema, err error)
 	Create(book *models.CreateBookSchema) (err error)
 	Update(book *models.UpdateBookSchema) (err error)
@@ -24,15 +28,27 @@ func NewBookService(bookRepository repository.BookRepositoryInterface) BookServi
 }
 
 func (s *bookService) FindAll(page int) (book []*models.Book, err error) {
-	return s.bookRepository.FindAll(page)
+	foundBooks, _ := s.bookRepository.FindAll(page)
+	if foundBooks == nil {
+		return nil, errors.New(NO_BOOKS_FOUND_ERROR_MESSAGE)
+	}
+	return foundBooks, nil
 }
 
-func (s *bookService) FindByName(name string, page int) (book []*models.Book, err error) {
-	return s.bookRepository.FindByName(name, page)
+func (s *bookService) FindByFilteredBooks(filters models.FilteredBookSchema, page int) (book []*models.Book, err error) {
+	foundBooks, _ := s.bookRepository.FindByFilteredBooks(filters, page)
+	if foundBooks == nil {
+		return nil, errors.New(NO_BOOKS_FOUND_ERROR_MESSAGE)
+	}
+	return foundBooks, nil
 }
 
 func (s *bookService) FindById(id int) (book *models.UpdateBookSchema, err error) {
-	return s.bookRepository.FindById(id)
+	foundBook, _ := s.bookRepository.FindById(id)
+	if foundBook == nil {
+		return nil, errors.New(NO_BOOKS_FOUND_ERROR_MESSAGE)
+	}
+	return foundBook, nil
 }
 
 func (s *bookService) Create(book *models.CreateBookSchema) (err error) {

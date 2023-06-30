@@ -19,7 +19,7 @@ func NewBookRoutes(bookController controllers.BookControllerInterface) *bookRout
 
 func (r *bookRoutes) RegisterRoutes(app *fiber.App) {
 	app.Get("/book", r.bookController.FindAll)
-	app.Get("/book/filter", r.bookController.FindByName)
+	app.Get("/book/filter", r.bookController.FindByFilteredBooks)
 	app.Post("/book", r.bookController.Create)
 	app.Patch("/book/:id", r.bookController.Update)
 	app.Delete("/book/:id", r.bookController.Delete)
