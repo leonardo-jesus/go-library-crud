@@ -1,8 +1,6 @@
 package services
 
 import (
-	"fmt"
-
 	"dario.cat/mergo"
 	"github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/book/models"
 	"github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/book/repository"
@@ -41,7 +39,6 @@ func (s *bookService) Create(book *models.CreateBookSchema) (err error) {
 }
 
 func (s *bookService) Update(book *models.UpdateBookSchema) (err error) {
-	fmt.Println(book)
 	bookFromDb, err := s.FindById(book.Id)
 	if err != nil {
 		return err

@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"github.com/jackc/pgx/v5"
@@ -133,7 +132,6 @@ func (r *bookRepository) Create(book *models.CreateBookSchema) (err error) {
 		WHERE authors.id = ANY($4::int[]);
 	`
 
-	fmt.Println(book.Authors)
 	_, err = r.db.Exec(context.Background(), sql, book.Name, book.Edition, book.PublicationYear, book.Authors)
 	if err != nil {
 		return err
