@@ -2,11 +2,14 @@ package services
 
 import (
 	"encoding/csv"
+	"errors"
 	"os"
 
 	"github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/author/models"
 	"github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/author/repository"
 )
+
+const NO_AUTHORS_FOUND_ERROR_MESSAGE = "no authors found"
 
 type AuthorServiceInterface interface {
 	FindAll(page int) (author []*models.Author, err error)
@@ -40,11 +43,19 @@ func ReadCsv(filename string) (records []string) {
 }
 
 func (s *authorService) FindAll(page int) (author []*models.Author, err error) {
-	return s.authorRepository.FindAll(page)
+	foundAuthors, _ := s.authorRepository.FindAll(page)
+	if foundAuthors == nil {
+		return nil, errors.New(NO_AUTHORS_FOUND_ERROR_MESSAGE)
+	}
+	return foundAuthors, nil
 }
 
 func (s *authorService) FindByName(name string, page int) (author []*models.Author, err error) {
-	return s.authorRepository.FindByName(name, page)
+	foundAuthors, _ := s.authorRepository.FindByName(name, page)
+	if foundAuthors == nil {
+		return nil, errors.New(NO_AUTHORS_FOUND_ERROR_MESSAGE)
+	}
+	return foundAuthors, nil
 }
 
 func (s *authorService) Create() (err error) {

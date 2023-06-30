@@ -8,6 +8,8 @@ import (
 	"github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/utils"
 )
 
+const NO_AUTHORS_FOUND_ERROR_MESSAGE = "no authors found"
+
 type AuthorControllerInterface interface {
 	FindAll(c *fiber.Ctx) error
 	FindByName(c *fiber.Ctx) error
@@ -16,18 +18,22 @@ type AuthorControllerInterface interface {
 
 type authorController struct {
 	authorService   services.AuthorServiceInterface
-	querystringUtil utils.QuerystringUtilInterface
+	queryStringUtil utils.QuerystringUtilInterface
 }
 
-func NewAuthorController(authorService services.AuthorServiceInterface, querystringUtil utils.QuerystringUtilInterface) AuthorControllerInterface {
-	return &authorController{authorService, querystringUtil}
+func NewAuthorController(authorService services.AuthorServiceInterface, queryStringUtil utils.QuerystringUtilInterface) AuthorControllerInterface {
+	return &authorController{authorService, queryStringUtil}
 }
 
 func (c *authorController) FindAll(ctx *fiber.Ctx) error {
-	page := c.querystringUtil.GetPageFromQuerystring(ctx)
+	page := c.queryStringUtil.GetPageFromQuerystring(ctx)
 
 	authors, err := c.authorService.FindAll(page)
 	if err != nil {
+		if err.Error() == NO_AUTHORS_FOUND_ERROR_MESSAGE {
+			return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
+		}
+
 		return ctx.Status(http.StatusInternalServerError).JSON(err)
 	}
 
@@ -35,10 +41,14 @@ func (c *authorController) FindAll(ctx *fiber.Ctx) error {
 }
 
 func (c *authorController) FindByName(ctx *fiber.Ctx) error {
-	page := c.querystringUtil.GetPageFromQuerystring(ctx)
+	page := c.queryStringUtil.GetPageFromQuerystring(ctx)
 
 	authors, err := c.authorService.FindByName(ctx.Query("name"), page)
 	if err != nil {
+		if err.Error() == NO_AUTHORS_FOUND_ERROR_MESSAGE {
+			return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
+		}
+
 		return ctx.Status(http.StatusInternalServerError).JSON(err)
 	}
 

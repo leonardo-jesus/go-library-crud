@@ -10,13 +10,13 @@ type QuerystringUtilInterface interface {
 	GetPageFromQuerystring(ctx *fiber.Ctx) int
 }
 
-type querystringUtil struct{}
+type queryStringUtil struct{}
 
 func NewQuerystringUtil() QuerystringUtilInterface {
-	return &querystringUtil{}
+	return &queryStringUtil{}
 }
 
-func (q *querystringUtil) GetPageFromQuerystring(ctx *fiber.Ctx) int {
+func (q *queryStringUtil) GetPageFromQuerystring(ctx *fiber.Ctx) int {
 	result, err := strconv.Atoi(ctx.Query("page"))
 	if err != nil {
 		return 1
