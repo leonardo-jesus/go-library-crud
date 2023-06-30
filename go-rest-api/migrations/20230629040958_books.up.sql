@@ -1,5 +1,6 @@
 CREATE TABLE books (
   id SERIAL PRIMARY KEY,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   name VARCHAR(255) NOT NULL,
   edition INTEGER,
   publication_year INTEGER
