@@ -1,7 +1,7 @@
 package models
 
 type Book struct {
-	Id              int      `json:"id" validate:"required,numeric"`
+	Id              int      `json:"id" validate:"required,numeric,min=0"`
 	Name            string   `json:"name" validate:"max=255"`
 	Edition         int      `json:"edition" validate:"numeric"`
 	PublicationYear int      `json:"publicationYear" validate:"numeric"`
@@ -16,7 +16,7 @@ type CreateBookSchema struct {
 }
 
 type UpdateBookSchema struct {
-	Id              int     `json:"id" validate:"required,numeric"`
+	Id              int     `json:"id" validate:"required,numeric,min=0"`
 	Name            *string `json:"name" validate:"max=255"`
 	Edition         *int    `json:"edition" validate:"numeric"`
 	PublicationYear *int    `json:"publicationYear" validate:"numeric"`

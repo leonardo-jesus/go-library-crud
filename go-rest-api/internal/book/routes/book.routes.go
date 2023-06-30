@@ -21,5 +21,6 @@ func (r *bookRoutes) RegisterRoutes(app *fiber.App) {
 	app.Get("/book", r.bookController.FindAll)
 	app.Get("/book/filter", r.bookController.FindByName)
 	app.Post("/book", r.bookController.Create)
-	app.Patch("/book", r.bookController.Update)
+	app.Patch("/book/:id", r.bookController.Update)
+	app.Delete("/book/:id", r.bookController.Delete)
 }

@@ -12,6 +12,7 @@ type BookServiceInterface interface {
 	FindById(id int) (book *models.UpdateBookSchema, err error)
 	Create(book *models.CreateBookSchema) (err error)
 	Update(book *models.UpdateBookSchema) (err error)
+	Delete(id int) (err error)
 }
 
 type bookService struct {
@@ -51,6 +52,12 @@ func (s *bookService) Update(book *models.UpdateBookSchema) (err error) {
 	}
 
 	s.bookRepository.Update(bookFromDb)
+
+	return nil
+}
+
+func (s *bookService) Delete(id int) (err error) {
+	s.bookRepository.Delete(id)
 
 	return nil
 }

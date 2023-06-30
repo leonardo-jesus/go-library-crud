@@ -14,6 +14,7 @@ type BookControllerInterface interface {
 	FindByName(c *fiber.Ctx) error
 	Create(c *fiber.Ctx) error
 	Update(c *fiber.Ctx) error
+	Delete(c *fiber.Ctx) error
 }
 
 type bookController struct {
@@ -70,9 +71,15 @@ func (c *bookController) Create(ctx *fiber.Ctx) error {
 }
 
 func (c *bookController) Update(ctx *fiber.Ctx) error {
-	bookFields := new(models.UpdateBookSchema)
+	bookIdParam, err := ctx.ParamsInt("id")
+	if err != nil {
+		return ctx.Status(http.StatusUnprocessableEntity).JSON(fiber.Map{"error": err.Error()})
+	}
 
-	err := ctx.BodyParser(bookFields)
+	bookFields := new(models.UpdateBookSchema)
+	bookFields.Id = bookIdParam
+
+	err = ctx.BodyParser(bookFields)
 	if err != nil {
 		return ctx.Status(http.StatusUnprocessableEntity).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -83,6 +90,20 @@ func (c *bookController) Update(ctx *fiber.Ctx) error {
 	}
 
 	err = c.bookService.Update(bookFields)
+	if err != nil {
+		return ctx.Status(http.StatusInternalServerError).JSON(err)
+	}
+
+	return ctx.Status(http.StatusCreated).JSON(fiber.Map{"success": "true"})
+}
+
+func (c *bookController) Delete(ctx *fiber.Ctx) error {
+	bookIdParam, err := ctx.ParamsInt("id")
+	if err != nil {
+		return ctx.Status(http.StatusUnprocessableEntity).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	err = c.bookService.Delete(bookIdParam)
 	if err != nil {
 		return ctx.Status(http.StatusInternalServerError).JSON(err)
 	}

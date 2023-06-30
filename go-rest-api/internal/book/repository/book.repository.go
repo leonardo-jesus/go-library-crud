@@ -16,6 +16,7 @@ type BookRepositoryInterface interface {
 	FindById(id int) (book *models.UpdateBookSchema, err error)
 	Create(book *models.CreateBookSchema) (err error)
 	Update(book *models.UpdateBookSchema) (err error)
+	Delete(id int) (err error)
 }
 
 type bookRepository struct {
@@ -182,6 +183,19 @@ func (r *bookRepository) InsertBookInBookAuthors(bookId int, authorsId *[]int) (
 	`
 
 	_, err = r.db.Exec(context.Background(), insertSQL, bookId, *authorsId)
+	if err != nil {
+		panic(err)
+	}
+
+	return nil
+}
+
+func (r *bookRepository) Delete(id int) (err error) {
+	deleteSQL := `
+		DELETE FROM books WHERE id = $1
+	`
+
+	_, err = r.db.Exec(context.Background(), deleteSQL, id)
 	if err != nil {
 		panic(err)
 	}
