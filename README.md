@@ -80,7 +80,7 @@ The ***Go Library*** is an application that uses **Go**, ***with the purpose to 
 
 ## 🔧 Work Environment
 - AMD Ryzen 5 3600, 16GB RAM, GTX 1660
-- WSL 2
+- WSL 2 (Ubuntu 22.04.2 LTS)
 - Visual Studio Code
 
 ## 🤔 How to contribute
