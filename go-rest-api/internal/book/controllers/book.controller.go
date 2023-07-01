@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -40,7 +41,8 @@ func (c *bookController) FindAll(ctx *fiber.Ctx) error {
 			return ctx.Status(http.StatusNotFound).JSON(fiber.Map{"message": err.Error()})
 		}
 
-		return ctx.Status(http.StatusInternalServerError).JSON(err)
+		log.Print(err.Error())
+		return ctx.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
 
 	return ctx.Status(http.StatusOK).JSON(books)
@@ -64,6 +66,7 @@ func (c *bookController) FindByFilteredBooks(ctx *fiber.Ctx) error {
 		for _, idString := range authorIds {
 			id, err := strconv.Atoi(idString)
 			if err != nil {
+				log.Print(err.Error())
 				ctx.Status(http.StatusNotFound).JSON(fiber.Map{"message": err.Error()})
 			}
 			*authorSlice = append(*authorSlice, id)
@@ -101,7 +104,8 @@ func (c *bookController) FindByFilteredBooks(ctx *fiber.Ctx) error {
 			return ctx.Status(http.StatusNotFound).JSON(fiber.Map{"message": err.Error()})
 		}
 
-		return ctx.Status(http.StatusInternalServerError).JSON(err)
+		log.Print(err.Error())
+		return ctx.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
 
 	return ctx.Status(http.StatusOK).JSON(books)
@@ -112,25 +116,29 @@ func (c *bookController) Create(ctx *fiber.Ctx) error {
 
 	err := ctx.BodyParser(book)
 	if err != nil {
+		log.Print(err.Error())
 		return ctx.Status(http.StatusUnprocessableEntity).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	errors := c.validatorUtil.ValidateStruct(book)
 	if errors != nil {
+		log.Print(err.Error())
 		return ctx.Status(http.StatusUnprocessableEntity).JSON(errors)
 	}
 
-	err = c.bookService.Create(book)
+	createdBook, err := c.bookService.Create(book)
 	if err != nil {
-		return ctx.Status(http.StatusInternalServerError).JSON(err)
+		log.Print(err.Error())
+		return ctx.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
 
-	return ctx.Status(http.StatusCreated).JSON(fiber.Map{"success": "true"})
+	return ctx.Status(http.StatusCreated).JSON(createdBook)
 }
 
 func (c *bookController) Update(ctx *fiber.Ctx) error {
 	bookIdParam, err := ctx.ParamsInt("id")
 	if err != nil {
+		log.Print(err.Error())
 		return ctx.Status(http.StatusUnprocessableEntity).JSON(fiber.Map{"error": err.Error()})
 	}
 
@@ -139,35 +147,40 @@ func (c *bookController) Update(ctx *fiber.Ctx) error {
 
 	err = ctx.BodyParser(bookFields)
 	if err != nil {
+		log.Print(err.Error())
 		return ctx.Status(http.StatusUnprocessableEntity).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	errors := c.validatorUtil.ValidateStruct(bookFields)
 	if errors != nil {
+		log.Print(err.Error())
 		return ctx.Status(http.StatusUnprocessableEntity).JSON(errors)
 	}
 
-	err = c.bookService.Update(bookFields)
+	updatedBook, err := c.bookService.Update(bookFields)
 	if err != nil {
 		if err.Error() == NO_BOOKS_FOUND_ERROR_MESSAGE {
 			return ctx.Status(http.StatusNotFound).JSON(fiber.Map{"message": err.Error()})
 		}
 
-		return ctx.Status(http.StatusInternalServerError).JSON(err)
+		log.Print(err.Error())
+		return ctx.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
 
-	return ctx.Status(http.StatusCreated).JSON(fiber.Map{"success": "true"})
+	return ctx.Status(http.StatusCreated).JSON(updatedBook)
 }
 
 func (c *bookController) Delete(ctx *fiber.Ctx) error {
 	bookIdParam, err := ctx.ParamsInt("id")
 	if err != nil {
+		log.Print(err.Error())
 		return ctx.Status(http.StatusUnprocessableEntity).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	err = c.bookService.Delete(bookIdParam)
 	if err != nil {
-		return ctx.Status(http.StatusInternalServerError).JSON(err)
+		log.Print(err.Error())
+		return ctx.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
 
 	return ctx.Status(http.StatusNoContent).JSON(fiber.Map{})

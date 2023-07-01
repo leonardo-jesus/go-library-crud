@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
@@ -34,7 +35,8 @@ func (c *authorController) FindAll(ctx *fiber.Ctx) error {
 			return ctx.Status(http.StatusNotFound).JSON(fiber.Map{"message": err.Error()})
 		}
 
-		return ctx.Status(http.StatusInternalServerError).JSON(err)
+		log.Print(err.Error())
+		return ctx.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
 
 	return ctx.Status(http.StatusOK).JSON(authors)
@@ -49,7 +51,8 @@ func (c *authorController) FindByName(ctx *fiber.Ctx) error {
 			return ctx.Status(http.StatusNotFound).JSON(fiber.Map{"message": err.Error()})
 		}
 
-		return ctx.Status(http.StatusInternalServerError).JSON(err)
+		log.Print(err.Error())
+		return ctx.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
 
 	return ctx.Status(http.StatusOK).JSON(authors)
@@ -58,7 +61,8 @@ func (c *authorController) FindByName(ctx *fiber.Ctx) error {
 func (c *authorController) Create(ctx *fiber.Ctx) error {
 	err := c.authorService.Create()
 	if err != nil {
-		return ctx.Status(http.StatusInternalServerError).JSON(err)
+		log.Print(err.Error())
+		return ctx.Status(http.StatusInternalServerError).JSON(err.Error())
 	}
 
 	return ctx.Status(http.StatusCreated).JSON(fiber.Map{"success": "true"})

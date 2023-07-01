@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"log"
+	"fmt"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/book/models"
@@ -38,7 +38,7 @@ func (r *bookRepository) FindAll(page int) (books []*models.Book, err error) {
 	`
 	rows, _ := r.db.Query(context.Background(), query, page, LIMIT)
 	if err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf("error selecting books on database: %w", err)
 	}
 	defer rows.Close()
 
@@ -50,7 +50,7 @@ func (r *bookRepository) FindAll(page int) (books []*models.Book, err error) {
 
 		err := rows.Scan(&book.Id, &book.Name, &book.Edition, &book.PublicationYear, &authors)
 		if err != nil {
-			log.Fatal(err)
+			return nil, fmt.Errorf("error scanning books select from database: %w", err)
 		}
 
 		book.Authors = authors
@@ -77,7 +77,7 @@ func (r *bookRepository) FindByFilteredBooks(filters models.FilteredBookSchema, 
 
 	rows, err := r.db.Query(context.Background(), query, filters.Name, filters.Edition, filters.PublicationYear, filters.Authors, page, LIMIT)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error selecting books by filtered books on database: %w", err)
 	}
 	defer rows.Close()
 
@@ -89,7 +89,7 @@ func (r *bookRepository) FindByFilteredBooks(filters models.FilteredBookSchema, 
 
 		err := rows.Scan(&book.Id, &book.Name, &book.Edition, &book.PublicationYear, &authorNames)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("error scanning books select by filtered books from database: %w", err)
 		}
 
 		book.Authors = authorNames
@@ -99,7 +99,7 @@ func (r *bookRepository) FindByFilteredBooks(filters models.FilteredBookSchema, 
 	return foundBooks, nil
 }
 
-func (r *bookRepository) FindById(id int) (books *models.UpdateBookSchema, err error) {
+func (r *bookRepository) FindById(id int) (book *models.UpdateBookSchema, err error) {
 	query := `
 		SELECT b.id, b.name, b.edition, b.publication_year, array_agg(a.id) AS authors
 		FROM books b
@@ -113,7 +113,7 @@ func (r *bookRepository) FindById(id int) (books *models.UpdateBookSchema, err e
 
 	rows, err := r.db.Query(context.Background(), query, id)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error selecting book by id on database: %w", err)
 	}
 	defer rows.Close()
 
@@ -125,7 +125,7 @@ func (r *bookRepository) FindById(id int) (books *models.UpdateBookSchema, err e
 
 		err := rows.Scan(&book.Id, &book.Name, &book.Edition, &book.PublicationYear, &authors)
 		if err != nil {
-			log.Fatal(err)
+			return nil, fmt.Errorf("error scanning books select by id from database: %w", err)
 		}
 
 		book.Authors = &authors
@@ -150,7 +150,7 @@ func (r *bookRepository) Create(book *models.CreateBookSchema) (err error) {
 
 	_, err = r.db.Exec(context.Background(), sql, book.Name, book.Edition, book.PublicationYear, book.Authors)
 	if err != nil {
-		return err
+		return fmt.Errorf("error inserting book on database: %w", err)
 	}
 
 	return nil
@@ -167,11 +167,18 @@ func (r *bookRepository) Update(book *models.UpdateBookSchema) (err error) {
 
 	_, err = r.db.Exec(context.Background(), updateSQL, *book.Name, *book.Edition, *book.PublicationYear, book.Id)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("error updating book on database: %w", err)
 	}
 
-	r.DeleteBookFromBookAuthors(book.Id)
-	r.InsertBookInBookAuthors(book.Id, book.Authors)
+	err = r.DeleteBookFromBookAuthors(book.Id)
+	if err != nil {
+		return err
+	}
+
+	err = r.InsertBookInBookAuthors(book.Id, book.Authors)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -183,7 +190,7 @@ func (r *bookRepository) DeleteBookFromBookAuthors(id int) (err error) {
 
 	_, err = r.db.Exec(context.Background(), deleteSQL, id)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("error deleting book from book authors table on database: %w", err)
 	}
 
 	return nil
@@ -199,7 +206,7 @@ func (r *bookRepository) InsertBookInBookAuthors(bookId int, authorsId *[]int) (
 
 	_, err = r.db.Exec(context.Background(), insertSQL, bookId, *authorsId)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("error iserting book on database: %w", err)
 	}
 
 	return nil
@@ -212,7 +219,7 @@ func (r *bookRepository) Delete(id int) (err error) {
 
 	_, err = r.db.Exec(context.Background(), deleteSQL, id)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("error deleting book on database: %w", err)
 	}
 
 	return nil

@@ -5,7 +5,6 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
-	"log"
 	"os"
 
 	"github.com/jackc/pgx/v5"
@@ -36,7 +35,7 @@ func (r *authorRepository) FindAll(page int) (authors []*models.Author, err erro
 	query := "SELECT * FROM authors ORDER BY id OFFSET (($1 - 1) * $2) ROWS FETCH NEXT $2 ROWS ONLY"
 	rows, _ := r.db.Query(context.Background(), query, page, LIMIT)
 	if err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf("error selecting authors on database: %w", err)
 	}
 	defer rows.Close()
 
@@ -47,7 +46,7 @@ func (r *authorRepository) FindAll(page int) (authors []*models.Author, err erro
 
 		err := rows.Scan(&row.Id, &row.Name)
 		if err != nil {
-			log.Fatal(err)
+			return nil, fmt.Errorf("error scanning authors select from database: %w", err)
 		}
 
 		foundAuthors = append(foundAuthors, &row)
@@ -60,7 +59,7 @@ func (r *authorRepository) FindByName(name string, page int) (authors []*models.
 	query := "SELECT * FROM authors WHERE name = $1 ORDER BY id OFFSET (($2 - 1) * $3) ROWS FETCH NEXT $3 ROWS ONLY"
 	rows, err := r.db.Query(context.Background(), query, name, page, LIMIT)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error selecting authors by name on database: %w", err)
 	}
 	defer rows.Close()
 
@@ -71,7 +70,7 @@ func (r *authorRepository) FindByName(name string, page int) (authors []*models.
 
 		err := rows.Scan(&row.Id, &row.Name)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("error scanning authors select by name from database: %w", err)
 		}
 
 		foundAuthors = append(foundAuthors, &row)
@@ -91,7 +90,7 @@ func (r *authorRepository) Create() (err error) {
 
 	tx, err := r.db.Begin(context.Background())
 	if err != nil {
-		return fmt.Errorf("unable to begin transaction: %w", err)
+		return fmt.Errorf("unable to begin database transaction: %w", err)
 	}
 	defer tx.Rollback(context.Background())
 
@@ -103,7 +102,7 @@ func (r *authorRepository) Create() (err error) {
 
 		err = bulkInsertOnDatabase(tx, chunk)
 		if err != nil {
-			return fmt.Errorf("error inserting CSV chunk: %w", err)
+			return fmt.Errorf("error inserting CSV chunk on database: %w", err)
 		}
 
 		if isEndOfFile {
@@ -113,7 +112,7 @@ func (r *authorRepository) Create() (err error) {
 
 	err = tx.Commit(context.Background())
 	if err != nil {
-		return fmt.Errorf("error committing transaction: %w", err)
+		return fmt.Errorf("error committing database transaction: %w", err)
 	}
 
 	return nil
