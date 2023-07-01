@@ -9,6 +9,7 @@
   <a href="#-Resources">Resources</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#-Technologies">Technologies</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#-Project">Project</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="#-Requirements">Requirements</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#-How-to-Run">How to Run</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#-Work-Environment">Work Environment</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#-How-to-contribute">How to contribute</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
@@ -60,6 +61,7 @@ This project was developed with the following technologies:
 - [Postgres](https://www.postgresql.org/)
 - [Fiber](https://docs.gofiber.io/)
 - [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
 - [pgx](https://pkg.go.dev/github.com/jackc/pgx)
 - [Fly.io](http://fly.io/)
 - [Neon.tech](https://neon.tech/)
@@ -69,7 +71,15 @@ This project was developed with the following technologies:
 ## 💻 Project
 The ***Go Library*** is an application that uses **Go**, ***with the purpose to achieve my goal which is to work at Dialog***💚. The API saves *6.8M authors* in *Postgres DB*, and makes available a *Books' CRUD*. Made with **Go**, **Postgres**, **Fiber**, **Docker** and **pgx**.
 
+## 🔧 Requirements
+To run this Go application, you will need to have only ***Docker** and **Docker Compose** on your computer.
+
+[🐳 **Docker**](https://www.docker.com/get-started) allows you to create and manage containers that encapsulate your application and its dependencies.
+
+[**Docker Compose**](https://docs.docker.com/compose/install/) is a tool that allows you to define and manage multi-container Docker applications. Docker Compose usually comes bundled with Docker, so if you have installed Docker using the official installer, Docker Compose should be included. You can verify its installation by running the command `docker compose version` or `docker-compose --version` in your terminal.
+
 ## 🏃 How to Run
+
 1. Make a clone;
 2. Open the project on your terminal;
 3. Run `cd ./go-rest-api`
@@ -80,10 +90,14 @@ The ***Go Library*** is an application that uses **Go**, ***with the purpose to 
 - By default the server will run at `localhost:3333` and the Postgres DB at `localhost:5432`.
 #### More informations at [API's Documentation](https://documenter.getpostman.com/view/11958037/TVYKZvnE).
 
-## 🔧 Work Environment
+## ⚙️ Work Environment
+
 - AMD Ryzen 5 3600, 16GB RAM, GTX 1660
 - WSL 2 (Ubuntu 22.04.2 LTS)
 - Visual Studio Code
+- Docker version 23.0.5
+- Docker Compose version v2.17.3
+- Go 1.20.4 linux/amd64
 
 ## 🤔 How to contribute
 
@@ -94,7 +108,7 @@ The ***Go Library*** is an application that uses **Go**, ***with the purpose to 
 
 After the merge of your pull request was made, you can delete your branch.
 
-## :memo: License
+## 📝 License
 
 This project is under License MIT. See the documentation [LICENSE](LICENSE) for more details.
 
