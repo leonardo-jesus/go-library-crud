@@ -67,7 +67,7 @@ func (c *bookController) FindByFilteredBooks(ctx *fiber.Ctx) error {
 			id, err := strconv.Atoi(idString)
 			if err != nil {
 				log.Print(err.Error())
-				ctx.Status(http.StatusNotFound).JSON(fiber.Map{"message": err.Error()})
+				ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
 			}
 			*authorSlice = append(*authorSlice, id)
 		}
