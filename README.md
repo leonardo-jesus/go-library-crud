@@ -67,14 +67,16 @@ This project was developed with the following technologies:
 - [mergo](https://github.com/imdario/mergo)
 
 ## 💻 Project
-The ***Go Library*** is an application that uses **Go**, ***with the purpose to achieve my goal which is to work at Dialog***💚. The API saves *6.8M authors* in *Postgres DB*, and makes available a *Books' CRUD*. Made with **Go**, **Postgres**,**Fiber**, **Docker** and **pgx**.
+The ***Go Library*** is an application that uses **Go**, ***with the purpose to achieve my goal which is to work at Dialog***💚. The API saves *6.8M authors* in *Postgres DB*, and makes available a *Books' CRUD*. Made with **Go**, **Postgres**, **Fiber**, **Docker** and **pgx**.
 
 ## 🏃 How to Run
 1. Make a clone;
 2. Open the project on your terminal;
-3. Run `docker compose run --rm api go mod tidy` to install Dependencies;
-4. Run `docker compose --profile tools run migration` to create the tables on database
-5. Run `docker compose up` to run the server;
+3. Run `cd ./go-rest-api`
+4. Run `cp .env.example .env` to copy environment variables
+5. Run `docker compose run --rm api go mod tidy` to install Dependencies;
+6. Run `docker compose --profile tools run migration` to create the tables on database
+7. Run `docker compose up` to run the server;
 - By default the server will run at `localhost:3333` and the Postgres DB at `localhost:5432`.
 #### More informations at [API's Documentation](https://documenter.getpostman.com/view/11958037/TVYKZvnE).
 
