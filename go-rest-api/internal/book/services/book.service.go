@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"fmt"
 
 	"dario.cat/mergo"
 	"github.com/leonardo-jesus/go-library-crud/go-rest-api/internal/book/models"
@@ -14,8 +15,8 @@ type BookServiceInterface interface {
 	FindAll(page int) (book []*models.Book, err error)
 	FindByFilteredBooks(filters models.FilteredBookSchema, page int) (book []*models.Book, err error)
 	FindById(id int) (book *models.UpdateBookSchema, err error)
-	Create(book *models.CreateBookSchema) (err error)
-	Update(book *models.UpdateBookSchema) (err error)
+	Create(book *models.CreateBookSchema) (createdBook *models.CreateBookSchema, err error)
+	Update(book *models.UpdateBookSchema) (updatedBook *models.UpdateBookSchema, err error)
 	Delete(id int) (err error)
 }
 
@@ -51,29 +52,34 @@ func (s *bookService) FindById(id int) (book *models.UpdateBookSchema, err error
 	return foundBook, nil
 }
 
-func (s *bookService) Create(book *models.CreateBookSchema) (err error) {
-	return s.bookRepository.Create(book)
+func (s *bookService) Create(book *models.CreateBookSchema) (createdBook *models.CreateBookSchema, err error) {
+	err = s.bookRepository.Create(book)
+	if err != nil {
+		return nil, err
+	}
+
+	return book, nil
 }
 
-func (s *bookService) Update(book *models.UpdateBookSchema) (err error) {
+func (s *bookService) Update(book *models.UpdateBookSchema) (updatedBook *models.UpdateBookSchema, err error) {
 	bookFromDb, err := s.FindById(book.Id)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	err = mergo.Merge(bookFromDb, book, mergo.WithOverride)
-
 	if err != nil {
-		return err
+		return nil, fmt.Errorf("error merging structs at update service: %w", err)
 	}
 
-	s.bookRepository.Update(bookFromDb)
+	err = s.bookRepository.Update(bookFromDb)
+	if err != nil {
+		return nil, err
+	}
 
-	return nil
+	return bookFromDb, nil
 }
 
 func (s *bookService) Delete(id int) (err error) {
-	s.bookRepository.Delete(id)
-
-	return nil
+	return s.bookRepository.Delete(id)
 }
