@@ -40,7 +40,5 @@ func (s *authorService) FindByName(name string, page int) (author []*models.Auth
 }
 
 func (s *authorService) Create() (err error) {
-	s.authorRepository.Create()
-
-	return nil
+	return s.authorRepository.Create()
 }
