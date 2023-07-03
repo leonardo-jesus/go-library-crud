@@ -72,7 +72,7 @@ This project was developed with the following technologies:
 The ***Go Library*** is an application that uses **Go**, ***with the purpose to achieve my goal which is to work at Dialog***💚. The API saves *6.8M authors* in *Postgres DB*, and makes available a *Books' CRUD*. Made with **Go**, **Postgres**, **Fiber**, **Docker** and **pgx**.
 
 ## 🔧 Requirements
-To run this Go application, you will need to have only ***Docker** and **Docker Compose** on your computer.
+To run this Go application, you will need to have only **Docker** and **Docker Compose** on your computer.
 
 [🐳 **Docker**](https://www.docker.com/get-started) allows you to create and manage containers that encapsulate your application and its dependencies.
 
@@ -88,7 +88,7 @@ To run this Go application, you will need to have only ***Docker** and **Docker 
 6. Run `docker compose --profile tools run migration` to create the tables on database
 7. Run `docker compose up` to run the server;
 - By default the server will run at `localhost:3333` and the Postgres DB at `localhost:5432`.
-#### More informations at [API's Documentation](https://documenter.getpostman.com/view/11958037/TVYKZvnE).
+#### More informations at [API's Documentation](https://documenter.getpostman.com/view/11958037/TVYKZvnE) or import the [Postman Collection](https://github.com/leonardo-jesus/go-library-crud/blob/master/go_library.postman_collection.json).
 
 ## ⚙️ Work Environment
 
@@ -98,6 +98,9 @@ To run this Go application, you will need to have only ***Docker** and **Docker 
 - Docker version 23.0.5
 - Docker Compose version v2.17.3
 - Go 1.20.4 linux/amd64
+- DBeaver Community Edition 23.0.5
+- Postman 10.15.4
+- Git version 2.34.1
 
 ## 🤔 How to contribute
 

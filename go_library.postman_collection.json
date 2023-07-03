@@ -1,0 +1,623 @@
+{
+	"info": {
+		"_postman_id": "c2c2cfbb-b8b6-49a7-9f8c-0067e1c766c1",
+		"name": "Go Library",
+		"description": "## **Introduction**\n\n#### Library CRUD\n\n---\n\n## **Overview**\n\n###### Documentation for Go Libray API. This API is a challenge to Dialog. The Go Library is an application that uses Go, with the purpose to achieve my goal which is to work at Dialog💚. The API saves 6.8M authors in Postgres DB, and makes available a Books' CRUD. Made with Go, Fiber, Docker, Postgres and pgx.\n\n---\n\n## **Error Codes**\n\n###### 404 - Not found\n\n###### 422 - Unprocessable Entity\n\n###### 500 - Internal server error",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11958037",
+		"_collection_link": "https://www.postman.com/leonardo-jesus/workspace/go-library-crud/collection/11958037-c2c2cfbb-b8b6-49a7-9f8c-0067e1c766c1?action=share&creator=11958037&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "routes",
+			"item": [
+				{
+					"name": "author",
+					"item": [
+						{
+							"name": "/author",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_URL}}/author?page=1",
+									"host": [
+										"{{base_URL}}"
+									],
+									"path": [
+										"author"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										}
+									]
+								},
+								"description": "#### List all authors from database per pages\n\n#### Response Schema\n| Key | Description | Example | Type |\n| --- | --- | --- | --- |\n| _id | Author's id | 1 | Int |\n| name | Author's name | Luz Goldner | String |"
+							},
+							"response": [
+								{
+									"name": "/author",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_URL}}/author?page=1",
+											"host": [
+												"{{base_URL}}"
+											],
+											"path": [
+												"author"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Fri, 30 Jun 2023 15:13:59 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "325"
+										}
+									],
+									"cookie": [],
+									"body": "[\n    {\n        \"id\": 1,\n        \"name\": \"Easton Sawayn\"\n    },\n    {\n        \"id\": 2,\n        \"name\": \"Cleta Kessler\"\n    },\n    {\n        \"id\": 3,\n        \"name\": \"Magnolia Wuckert\"\n    },\n    {\n        \"id\": 4,\n        \"name\": \"Rhea Veum\"\n    },\n    {\n        \"id\": 5,\n        \"name\": \"Alek Hammes\"\n    },\n    {\n        \"id\": 6,\n        \"name\": \"Sylvia Lang\"\n    },\n    {\n        \"id\": 7,\n        \"name\": \"Ibrahim Schinner\"\n    },\n    {\n        \"id\": 8,\n        \"name\": \"Janis Strosin\"\n    },\n    {\n        \"id\": 9,\n        \"name\": \"Jimmy Jacobson\"\n    },\n    {\n        \"id\": 10,\n        \"name\": \"Sylvester Barrows\"\n    }\n]"
+								},
+								{
+									"name": "/author",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_URL}}/author?page=6800000",
+											"host": [
+												"{{base_URL}}"
+											],
+											"path": [
+												"author"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "6800000"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Fri, 30 Jun 2023 15:17:53 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "325"
+										}
+									],
+									"cookie": [],
+									"body": "[\n    {\n        \"id\": 1,\n        \"name\": \"Easton Sawayn\"\n    },\n    {\n        \"id\": 2,\n        \"name\": \"Cleta Kessler\"\n    },\n    {\n        \"id\": 3,\n        \"name\": \"Magnolia Wuckert\"\n    },\n    {\n        \"id\": 4,\n        \"name\": \"Rhea Veum\"\n    },\n    {\n        \"id\": 5,\n        \"name\": \"Alek Hammes\"\n    },\n    {\n        \"id\": 6,\n        \"name\": \"Sylvia Lang\"\n    },\n    {\n        \"id\": 7,\n        \"name\": \"Ibrahim Schinner\"\n    },\n    {\n        \"id\": 8,\n        \"name\": \"Janis Strosin\"\n    },\n    {\n        \"id\": 9,\n        \"name\": \"Jimmy Jacobson\"\n    },\n    {\n        \"id\": 10,\n        \"name\": \"Sylvester Barrows\"\n    }\n]"
+								}
+							]
+						},
+						{
+							"name": "/author/filter",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_URL}}/author/filter?name=Luz Goldner&page=1",
+									"host": [
+										"{{base_URL}}"
+									],
+									"path": [
+										"author",
+										"filter"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "Luz Goldner"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										}
+									]
+								},
+								"description": "#### List all authors with the exact name from querystring\n\n#### Response Schema\n\n| Key | Description | Example | Type |\n| --- | --- | --- | --- |\n| _id | Author's id | 1 | Int |\n| name | Author's name | Luz Goldner | String |"
+							},
+							"response": [
+								{
+									"name": "/author/filter",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_URL}}/author/filter?name=Luz Goldner&page=1",
+											"host": [
+												"{{base_URL}}"
+											],
+											"path": [
+												"author",
+												"filter"
+											],
+											"query": [
+												{
+													"key": "name",
+													"value": "Luz Goldner"
+												},
+												{
+													"key": "page",
+													"value": "1"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Fri, 30 Jun 2023 15:23:34 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "216"
+										}
+									],
+									"cookie": [],
+									"body": "[\n    {\n        \"id\": 598682,\n        \"name\": \"Luz Goldner\"\n    },\n    {\n        \"id\": 3891120,\n        \"name\": \"Luz Goldner\"\n    },\n    {\n        \"id\": 5733843,\n        \"name\": \"Luz Goldner\"\n    },\n    {\n        \"id\": 6211310,\n        \"name\": \"Luz Goldner\"\n    },\n    {\n        \"id\": 6525548,\n        \"name\": \"Luz Goldner\"\n    },\n    {\n        \"id\": 6799997,\n        \"name\": \"Luz Goldner\"\n    }\n]"
+								}
+							]
+						},
+						{
+							"name": "/author",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{base_URL}}/author",
+									"host": [
+										"{{base_URL}}"
+									],
+									"path": [
+										"author"
+									]
+								},
+								"description": "#### Save the Authors' CSV file in Postgres Database (6.8M authors)"
+							},
+							"response": [
+								{
+									"name": "/author",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "{{base_URL}}/author",
+											"host": [
+												"{{base_URL}}"
+											],
+											"path": [
+												"author"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Fri, 30 Jun 2023 15:33:34 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "18"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"success\": \"true\"\n}"
+								}
+							]
+						}
+					],
+					"description": "#### Author's endpoint, to save authors' csv in database, list or filter authors by name"
+				},
+				{
+					"name": "book",
+					"item": [
+						{
+							"name": "/book",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_URL}}/book?page=1",
+									"host": [
+										"{{base_URL}}"
+									],
+									"path": [
+										"book"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										}
+									]
+								},
+								"description": "#### List all books from database per pages\n\n#### Response Schema\n\n| Key | Description | Example | Type |\n| --- | --- | --- | --- |\n| id | Book's id | 1 | Int |\n| name | Book's name | The Age of AI | String |\n| edition | Book's edition number | 1 | Int |\n| publicationYear | Book's publication year | 2021 | Int |\n| authors | Book's authors | \\[\"Betty Schmidt\", \"Jayne Kozey\", \"Domingo Brown\"\\] | \\[\\]String |"
+							},
+							"response": [
+								{
+									"name": "/book",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_URL}}/book?page=1",
+											"host": [
+												"{{base_URL}}"
+											],
+											"path": [
+												"book"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Fri, 30 Jun 2023 15:48:01 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "464"
+										}
+									],
+									"cookie": [],
+									"body": "[\n    {\n        \"id\": 1,\n        \"name\": \"The Age of AI\",\n        \"edition\": 2,\n        \"publicationYear\": 2021,\n        \"authors\": [\n            \"Betty Schmidt\",\n            \"Jayne Kozey\",\n            \"Domingo Brown\"\n        ]\n    },\n    {\n        \"id\": 2,\n        \"name\": \"The DevOps Handbook\",\n        \"edition\": 1,\n        \"publicationYear\": 2016,\n        \"authors\": [\n            \"Claudine Heller\",\n            \"Edgar Ondricka\",\n            \"Mollie Hintz\"\n        ]\n    },\n    {\n        \"id\": 4,\n        \"name\": \"Clean Code\",\n        \"edition\": 3,\n        \"publicationYear\": 2021,\n        \"authors\": [\n            \"Lora Damore\",\n            \"Cade Marks\"\n        ]\n    },\n    {\n        \"id\": 5,\n        \"name\": \"Clean Architecture\",\n        \"edition\": 2,\n        \"publicationYear\": 2020,\n        \"authors\": [\n            \"Easton Sawayn\"\n        ]\n    }\n]"
+								}
+							]
+						},
+						{
+							"name": "/book/filter",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_URL}}/book/filter?name=The DevOps Handbook&authors=21234&publicationYear=2016&edition=1",
+									"host": [
+										"{{base_URL}}"
+									],
+									"path": [
+										"book",
+										"filter"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "The DevOps Handbook"
+										},
+										{
+											"key": "authors",
+											"value": "21234"
+										},
+										{
+											"key": "publicationYear",
+											"value": "2016"
+										},
+										{
+											"key": "edition",
+											"value": "1"
+										}
+									]
+								},
+								"description": "#### List all books filtering by name, edition, publication year, or authors\n\n#### Response Schema\n| Key | Description | Example | Type |\n| --- | --- | --- | --- |\n| id | Book's id | 1 | Int |\n| name | Book's name | The Age of AI | String |\n| edition | Book's edition number | 1 | Int |\n| publicationYear | Book's publication year | 2021 | Int |\n| authors | Book's authors | \\[\"Betty Schmidt\", \"Jayne Kozey\", \"Domingo Brown\"\\] | \\[\\]String |"
+							},
+							"response": [
+								{
+									"name": "/book/filter",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_URL}}/book/filter?name=The DevOps Handbook&authors=21234&publicationYear=2016&edition=1",
+											"host": [
+												"{{base_URL}}"
+											],
+											"path": [
+												"book",
+												"filter"
+											],
+											"query": [
+												{
+													"key": "name",
+													"value": "The DevOps Handbook"
+												},
+												{
+													"key": "authors",
+													"value": "21234"
+												},
+												{
+													"key": "publicationYear",
+													"value": "2016"
+												},
+												{
+													"key": "edition",
+													"value": "1"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Fri, 30 Jun 2023 15:52:08 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "136"
+										}
+									],
+									"cookie": [],
+									"body": "[\n    {\n        \"id\": 2,\n        \"name\": \"The DevOps Handbook\",\n        \"edition\": 1,\n        \"publicationYear\": 2016,\n        \"authors\": [\n            \"Claudine Heller\",\n            \"Edgar Ondricka\",\n            \"Mollie Hintz\"\n        ]\n    }\n]"
+								}
+							]
+						},
+						{
+							"name": "/book",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"The DevOps Handbook\",\r\n    \"edition\": 1,\r\n    \"publicationYear\": 2016,\r\n    \"authors\": [\r\n        1,\r\n        321,\r\n        68000\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_URL}}/book",
+									"host": [
+										"{{base_URL}}"
+									],
+									"path": [
+										"book"
+									]
+								},
+								"description": "#### Save a book in database\n\n#### Body Schema\n\n| Key | Description | Example | Type |\n| --- | --- | --- | --- |\n| name | Book's name | The Age of AI | String |\n| edition | Book's edition number | 1 | Int |\n| publicationYear | Book's publication year | 2021 | Int |\n| authors | Book's authors | \\[1, 300, 4021\\] | \\[\\]Int |"
+							},
+							"response": [
+								{
+									"name": "/book",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\": \"The DevOps Handbook\",\r\n    \"edition\": 1,\r\n    \"publicationYear\": 2016,\r\n    \"authors\": [\r\n        1,\r\n        321,\r\n        68000\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_URL}}/book",
+											"host": [
+												"{{base_URL}}"
+											],
+											"path": [
+												"book"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Sat, 01 Jul 2023 16:53:04 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "89"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"name\": \"The DevOps Handbook\",\n    \"edition\": 1,\n    \"publicationYear\": 2016,\n    \"authors\": [\n        1,\n        321,\n        68000\n    ]\n}"
+								}
+							]
+						},
+						{
+							"name": "/book:id",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Clean Code\",\r\n    \"edition\": 30,\r\n    \"publicationYear\": 2020,\r\n    \"authors\": [\r\n        300\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_URL}}/book/1",
+									"host": [
+										"{{base_URL}}"
+									],
+									"path": [
+										"book",
+										"1"
+									]
+								},
+								"description": "#### Update book's info in database, based on the fields sent on body\n\n#### Body Schema\n\n| Key | Description | Example | Type |\n| --- | --- | --- | --- |\n| name | Book's name | The Age of AI | String |\n| edition | Book's edition number | 1 | Int |\n| publicationYear | Book's publication year | 2021 | Int |\n| authors | Book's authors | \\[1, 300, 4021\\] | \\[\\]Int |"
+							},
+							"response": [
+								{
+									"name": "/book:id",
+									"originalRequest": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n   \"name\": \"Clean Code\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_URL}}/book/1",
+											"host": [
+												"{{base_URL}}"
+											],
+											"path": [
+												"book",
+												"1"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Sat, 01 Jul 2023 16:36:25 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "80"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"id\": 1,\n    \"name\": \"Clean Code\",\n    \"edition\": 30,\n    \"publicationYear\": 2020,\n    \"authors\": [\n        300\n    ]\n}"
+								}
+							]
+						},
+						{
+							"name": "/book/:id",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_URL}}/book/5",
+									"host": [
+										"{{base_URL}}"
+									],
+									"path": [
+										"book",
+										"5"
+									]
+								},
+								"description": "#### Delete book's info in database"
+							},
+							"response": [
+								{
+									"name": "/book/:id",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{base_URL}}/book/5",
+											"host": [
+												"{{base_URL}}"
+											],
+											"path": [
+												"book",
+												"5"
+											]
+										}
+									},
+									"status": "No Content",
+									"code": 204,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Fri, 30 Jun 2023 16:03:59 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": null
+								}
+							]
+						}
+					],
+					"description": "#### Book's endpoint to save books, update, list or filter by name, edition, publication year or authors"
+				}
+			],
+			"description": "#### It contains all routes that API makes available"
+		}
+	]
+}
