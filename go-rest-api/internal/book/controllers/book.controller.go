@@ -23,17 +23,17 @@ type BookControllerInterface interface {
 }
 
 type bookController struct {
-	bookService      services.BookServiceInterface
-	validatorUtil    utils.ValidatorUtilInterface
-	requestParamUtil utils.RequestParamUtilInterface
+	bookService   services.BookServiceInterface
+	validatorUtil utils.ValidatorUtilInterface
+	pageParamUtil utils.PageParamUtilInterface
 }
 
-func NewBookController(bookService services.BookServiceInterface, validatorUtil utils.ValidatorUtilInterface, requestParamUtil utils.RequestParamUtilInterface) BookControllerInterface {
-	return &bookController{bookService, validatorUtil, requestParamUtil}
+func NewBookController(bookService services.BookServiceInterface, validatorUtil utils.ValidatorUtilInterface, pageParamUtil utils.PageParamUtilInterface) BookControllerInterface {
+	return &bookController{bookService, validatorUtil, pageParamUtil}
 }
 
 func (c *bookController) FindAll(ctx *fiber.Ctx) error {
-	page := c.requestParamUtil.GetPageFromQueryString(ctx)
+	page := c.pageParamUtil.ConvertPageStringToInt(ctx.Query("page"))
 
 	books, err := c.bookService.FindAll(page)
 	if err != nil {
@@ -49,7 +49,7 @@ func (c *bookController) FindAll(ctx *fiber.Ctx) error {
 }
 
 func (c *bookController) FindByFilteredBooks(ctx *fiber.Ctx) error {
-	page := c.requestParamUtil.GetPageFromQueryString(ctx)
+	page := c.pageParamUtil.ConvertPageStringToInt(ctx.Query("page"))
 
 	var nameValue *string
 	var nameFromQuery = ctx.Query("name")
@@ -74,14 +74,14 @@ func (c *bookController) FindByFilteredBooks(ctx *fiber.Ctx) error {
 	}
 
 	var publicationYearValue, editionValue *int
-	publicationYearFromQuery := c.requestParamUtil.GetIntFromQueryString(ctx, "publicationYear")
-	if publicationYearFromQuery != 0 {
+	publicationYearFromQuery, err := strconv.Atoi(ctx.Query("publicationYear"))
+	if err == nil && publicationYearFromQuery != 0 {
 		publicationYearValue = new(int)
 		*publicationYearValue = publicationYearFromQuery
 	}
 
-	editionFromQuery := c.requestParamUtil.GetIntFromQueryString(ctx, "edition")
-	if editionFromQuery != 0 {
+	editionFromQuery, err := strconv.Atoi(ctx.Query("edition"))
+	if err == nil && editionFromQuery != 0 {
 		editionValue = new(int)
 		*editionValue = editionFromQuery
 	}

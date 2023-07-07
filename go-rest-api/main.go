@@ -28,17 +28,17 @@ func main() {
 	app.Use(logger.New())
 
 	validatorUtil := utils.NewValidatorUtil(validator.New())
-	requestParamUtil := utils.NewRequestParamUtil()
+	pageParamUtil := utils.NewPageParamUtil()
 
 	authorRepository := authorRepository.NewAuthorRepository(db)
 	authorService := authorServices.NewAuthorService(authorRepository)
-	authorController := authorControllers.NewAuthorController(authorService, requestParamUtil)
+	authorController := authorControllers.NewAuthorController(authorService, pageParamUtil)
 	authorRouter := authorRoutes.NewAuthorRoutes(authorController)
 	authorRouter.RegisterRoutes(app)
 
 	bookRepository := bookRepository.NewBookRepository(db)
 	bookService := bookServices.NewBookService(bookRepository)
-	bookController := bookControllers.NewBookController(bookService, validatorUtil, requestParamUtil)
+	bookController := bookControllers.NewBookController(bookService, validatorUtil, pageParamUtil)
 	bookRouter := bookRoutes.NewBookRoutes(bookController)
 	bookRouter.RegisterRoutes(app)
 

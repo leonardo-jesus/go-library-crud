@@ -18,16 +18,16 @@ type AuthorControllerInterface interface {
 }
 
 type authorController struct {
-	authorService    services.AuthorServiceInterface
-	requestParamUtil utils.RequestParamUtilInterface
+	authorService services.AuthorServiceInterface
+	pageParamUtil utils.PageParamUtilInterface
 }
 
-func NewAuthorController(authorService services.AuthorServiceInterface, requestParamUtil utils.RequestParamUtilInterface) AuthorControllerInterface {
-	return &authorController{authorService, requestParamUtil}
+func NewAuthorController(authorService services.AuthorServiceInterface, pageParamUtil utils.PageParamUtilInterface) AuthorControllerInterface {
+	return &authorController{authorService, pageParamUtil}
 }
 
 func (c *authorController) FindAll(ctx *fiber.Ctx) error {
-	page := c.requestParamUtil.GetPageFromQueryString(ctx)
+	page := c.pageParamUtil.ConvertPageStringToInt(ctx.Query("page"))
 
 	authors, err := c.authorService.FindAll(page)
 	if err != nil {
@@ -43,7 +43,7 @@ func (c *authorController) FindAll(ctx *fiber.Ctx) error {
 }
 
 func (c *authorController) FindByName(ctx *fiber.Ctx) error {
-	page := c.requestParamUtil.GetPageFromQueryString(ctx)
+	page := c.pageParamUtil.ConvertPageStringToInt(ctx.Query("page"))
 
 	authors, err := c.authorService.FindByName(ctx.Query("name"), page)
 	if err != nil {
